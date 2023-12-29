@@ -1,13 +1,181 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./css/style.css" />
     <title>Mini Library</title>
-</head>
-<body>
-    
+  </head>
+  <body>
+    <main>
+      <form action="/search" method="get">
+        <input
+          type="search"
+          id="search"
+          name="q"
+          placeholder="Search here..."
+        />
+        <button type="submit">Search</button>
+      </form>
+
+      <aside>
+        <img
+          src="https://pluspng.com/img-png/umbrella-hd-png-umbrella-rainbow-3000.png"
+          alt="rainbow Umbrella"
+          class="umbrellaImg"
+        />
+
+        <h1><span class="number8">8</span> Classic Childrens Books</h1>
+      </aside>
+
+      <div id="booksContainer">
+        <section class="firstRow">
+          <figure class="book" data-id="1">
+            <hr />
+            <img
+              class="cover"
+              src="http://rwethereyetmom.com/wp-content/uploads/2013/01/Goodnight-Moon.jpg"
+              alt=""
+            />
+            <figcaption>
+              <h2 class="bookName"></h2>
+              <h3 class="authorName"></h3>
+            </figcaption>
+          </figure>
+
+          <figure class="book" data-id="2">
+            <hr />
+            <img
+              class="cover"
+              src="https://tse4.mm.bing.net/th?id=OIP.D4Xw_EY1QcYUEeQEToW9RgHaHc&pid=Api&P=0&h=180"
+              alt=""
+            />
+            <figcaption>
+              <h2 class="bookName"></h2>
+              <h3 class="authorName"></h3>
+            </figcaption>
+          </figure>
+
+          <figure class="book" data-id="3">
+            <hr />
+            <img
+              class="cover"
+              src="http://images.macmillan.com/folio-assets/macmillan_us_frontbookcovers_1000H/9780312367558.jpg"
+              alt=""
+            />
+            <figcaption>
+              <h2 class="bookName"></h2>
+              <h3 class="authorName"></h3>
+            </figcaption>
+          </figure>
+
+          <figure class="book" data-id="4">
+            <hr />
+            <img
+              class="cover"
+              src="https://tse3.mm.bing.net/th?id=OIP.gLz7HClxrkCYsvaNJRazvwHaJQ&pid=Api&P=0&h=180"
+              alt=""
+            />
+            <figcaption>
+              <h2 class="bookName"></h2>
+              <h3 class="authorName"></h3>
+            </figcaption>
+          </figure>
+        </section>
+
+        <section class="secondRow">
+          <figure class="book" data-id="5">
+            <hr />
+            <img
+              class="cover"
+              src="https://tse4.mm.bing.net/th?id=OIP.dCCgEaaPpA5MF3EFupvL5QHaGq&pid=Api&P=0&h=180"
+              alt=""
+            />
+            <figcaption>
+              <h2 class="bookName"></h2>
+              <h3 class="authorName"></h3>
+            </figcaption>
+          </figure>
+
+          <figure class="book" data-id="6">
+            <hr />
+            <img
+              class="cover"
+              src="https://image.tmdb.org/t/p/original/nAGRLwJC0jv7QlfJR6y32xRZqcF.jpg"
+              alt=""
+            />
+            <figcaption>
+              <h2 class="bookName"></h2>
+              <h3 class="authorName"></h3>
+            </figcaption>
+          </figure>
+
+          <figure class="book" data-id="7">
+            <hr />
+            <img
+              class="cover"
+              src="https://d5i0fhmkm8zzl.cloudfront.net/9780545650960.jpg"
+              alt=""
+            />
+            <figcaption>
+              <h2 class="bookName"></h2>
+              <h3 class="authorName"></h3>
+            </figcaption>
+          </figure>
+
+          <figure class="book" data-id="8">
+            <hr />
+            <img
+              class="cover"
+              src="https://tse4.mm.bing.net/th?id=OIP.sfjKSzXWNTEwhUlUmRWeYQHaLW&pid=Api&P=0&h=180"
+              alt=""
+            />
+            <figcaption>
+              <h2 class="bookName"></h2>
+              <h3 class="authorName"></h3>
+            </figcaption>
+          </figure>
+        </section>
+      </div>
+    </main>
+
+    <button class="goBackBtn">←</button>
+
+    <div id="bookInfoContainer">
+      <article class="coverContainer">
+        <figure class="infoBook">
+          <hr/ class="secondLine">
+          <img
+            class="infoPageCover"
+            src=""
+            alt="cover"
+          />
+          <figcaption>
+            <h2 class="infoPageBookName"></h2>
+            <h3 class="infoPageAuthorName"></h3>
+          </figcaption>
+        </figure>
+      </article>
+
+      <article class="infoContainer">
+        <h2 class="infoPageBookName2"></h2>
+        <h3 class="infoPageAuthorName2"></h3>
+        <p class="bookDescription"></p>
+
+        <ul class="detailsBox">
+          <div>
+            <li><strong>Audience:</strong></li>
+            <li><strong>First published:</strong></li>
+          </div>
+          <div>
+            <li><strong>Pages:</strong>256</li>
+            <li><strong>Publisher:</strong></li>
+          </div>
+        </ul>
+        <button class="buyBtn">Buy me!</button>
+      </article>
+    </div>
+
     <script src="./js/index.js"></script>
-</body>
+  </body>
 </html>
