@@ -9,7 +9,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 let bookInfo = [];
 let book = null;
+let searchResults;
+const searchElement = document.querySelector("#search");
+const submitBtn = document.querySelector("#submitBtn");
+const searchForm = document.querySelector("#searchForm");
+const resultsDiv = document.createElement("div");
 const booksArray = createClickableBooksList();
+let resultsArray = [];
 const firstPage = document.querySelector("#booksContainer");
 const secondPage = document.querySelector("#bookInfoContainer");
 const bookNameInfoPage = document.querySelector(".infoPageBookName");
@@ -71,9 +77,11 @@ function updateBookCover() {
     }
 }
 function displayBookInfoContainer() {
+    goBackBtn.style.display = "block";
     firstPage.style.display = "none";
     secondPage.style.display = "flex";
-    goBackBtn.style.display = "block";
+    resultsDiv.innerHTML = "";
+    searchElement.value = "";
     if (bookNameInfoPage &&
         authorNameInfoPage &&
         infoPageCover &&
@@ -121,14 +129,14 @@ function updateDetailsBox() {
         // Aggiungi i dettagli dinamicamente
         const audienceItem = document.createElement("div");
         audienceItem.innerHTML = `
-      <li><strong>Audience:</strong>${(book === null || book === void 0 ? void 0 : book.audience) || ""}</li>
-      <li><strong>First published:</strong>${(book === null || book === void 0 ? void 0 : book.year) || ""}</li>
+      <li><strong>Audience: </strong>${(book === null || book === void 0 ? void 0 : book.audience) || ""}</li>
+      <li><strong>First published: </strong>${(book === null || book === void 0 ? void 0 : book.year) || ""}</li>
     `;
         detailsBox.appendChild(audienceItem);
         const additionalDetailsItem = document.createElement("div");
         additionalDetailsItem.innerHTML = `
-      <li><strong>Pages:</strong>${(book === null || book === void 0 ? void 0 : book.pages) || ""}</li>
-      <li><strong>Publisher:</strong>${(book === null || book === void 0 ? void 0 : book.publisher) || ""}</li>
+      <li><strong>Pages: </strong>${(book === null || book === void 0 ? void 0 : book.pages) || ""}</li>
+      <li><strong>Publisher: </strong>${(book === null || book === void 0 ? void 0 : book.publisher) || ""}</li>
     `;
         detailsBox.appendChild(additionalDetailsItem);
     }
@@ -147,14 +155,18 @@ function attachBuyButton() {
         buyBtn.addEventListener("click", () => {
             console.log("button clicked");
             // Verifica se il libro corrente ha un ID valido
-            if (book && book.id !== undefined && book.id >= 1 && book.id <= purchaseLinksList.length) {
+            if (book &&
+                book.id !== undefined &&
+                book.id >= 1 &&
+                book.id <= purchaseLinksList.length) {
                 const purchaseLinkIndex = getPurchaseLinkIndex(book.id);
                 // Verifica se l'indice è valido
-                if (purchaseLinkIndex >= 0 && purchaseLinkIndex < purchaseLinksList.length) {
+                if (purchaseLinkIndex >= 0 &&
+                    purchaseLinkIndex < purchaseLinksList.length) {
                     const purchaseLink = purchaseLinksList[purchaseLinkIndex];
                     if (purchaseLink) {
                         // Reindirizza l'utente al link di acquisto
-                        window.open(purchaseLink, '_blank');
+                        window.open(purchaseLink, "_blank");
                     }
                     else {
                         console.error("Link di acquisto non disponibile per questo libro");
@@ -170,6 +182,112 @@ function attachBuyButton() {
         });
     }
 }
+function searchBook() {
+    if (searchElement) {
+        const searchTerm = searchElement.value.toLowerCase();
+        searchResults = bookInfo.filter((book) => book.title.toLowerCase().includes(searchTerm) ||
+            book.author.toLowerCase().includes(searchTerm));
+        if (searchElement.value == "") {
+            resultsDiv.innerHTML = "";
+        }
+        if (searchResults.length > 0) {
+            displaySearchResults(searchResults);
+        }
+        else {
+            displayNoResultsMessage();
+        }
+        attachClickEventToResults();
+    }
+}
+function displaySearchResults(results) {
+    // Rimuovi i risultati precedenti
+    resultsDiv.innerHTML = "";
+    // Creare un elemento div per ogni risultato e visualizzarlo
+    results.forEach((result) => {
+        const resultDiv = document.createElement("div");
+        resultDiv.classList.add("resultDiv");
+        resultDiv.setAttribute("data-id", result.id.toString()); // Aggiungi l'ID del libro come data-id
+        resultDiv.style.backgroundColor = `${result.color}`;
+        resultDiv.innerHTML = `
+      <h3>${result.title}</h3>
+      <p><strong>Author:</strong> ${result.author}</p>
+    `;
+        resultsDiv.appendChild(resultDiv);
+    });
+    // Aggiungi i risultati al form di ricerca
+    searchForm.appendChild(resultsDiv);
+    // Aggiorna l'array di risultati cliccabili
+    updateResultsArray();
+    // Chiamare la funzione una volta dopo la creazione di tutti gli elementi risultato
+    attachClickEventToResults();
+}
+function createClickableResultsList() {
+    const clickableResults = document.querySelectorAll(".resultDiv");
+    return Array.from(clickableResults);
+}
+function attachClickEventToResults() {
+    resultsArray.forEach((resultElement) => {
+        resultElement.addEventListener("click", () => {
+            var _a;
+            // Ottieni direttamente l'ID del libro dall'attributo data-id dell'elemento risultato
+            const bookId = +resultElement.getAttribute("data-id") || 0;
+            console.log(bookId);
+            // Trova l'elemento del libro corrispondente nell'array booksArray
+            const bookElement = booksArray.find((element) => {
+                const dataId = element.getAttribute("data-id");
+                const elementBookId = dataId ? +dataId : 0;
+                return elementBookId === bookId;
+            });
+            ;
+            if (bookElement) {
+                // Ottieni l'URL della copertina dall'elemento del libro
+                const coverUrl = (_a = bookElement
+                    .querySelector(".cover")) === null || _a === void 0 ? void 0 : _a.getAttribute("src");
+                // Trova il libro corrispondente nell'array bookInfo
+                const clickedBook = bookInfo.find((book) => book.id === bookId);
+                if (clickedBook) {
+                    // Aggiorna il libro corrente con il libro cliccato
+                    book = clickedBook;
+                    // Inietta l'URL della copertina in clickedBook
+                    clickedBook.coverUrl = coverUrl || "";
+                    // Mostra la seconda pagina con le informazioni aggiornate
+                    displayBookInfoContainer();
+                }
+            }
+        });
+    });
+}
+function updateResultsArray() {
+    resultsArray = createClickableResultsList();
+}
+function displayNoResultsMessage() {
+    // Rimuovi i risultati precedenti
+    resultsDiv.innerHTML = "";
+    // Visualizza un messaggio "no Results"
+    resultsDiv.textContent = "No Results";
+}
+function createSubmitEvent() {
+    if (searchElement) {
+        searchElement.addEventListener("input", () => {
+            searchBook();
+            if (searchElement.value === "") {
+                resultsDiv.innerHTML = "";
+            }
+        });
+    }
+    if (submitBtn && searchForm) {
+        submitBtn.addEventListener("click", () => {
+            console.log("submitted");
+            searchBook();
+        });
+        searchForm.addEventListener("submit", (event) => {
+            event.preventDefault(); // Impedisce l'invio del modulo normale
+            console.log("submitted");
+            searchBook();
+        });
+    }
+}
+createSubmitEvent();
 getInfoBook();
 attachBackButton();
 attachBuyButton();
