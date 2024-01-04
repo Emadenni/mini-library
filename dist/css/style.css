@@ -161,7 +161,7 @@ form {
   border-radius: 5px;
 }
 
-.hoverEffect {
+.resultDiv :hover {
   cursor: pointer;
   scale: 1.1;
 }

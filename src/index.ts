@@ -1,5 +1,5 @@
 interface Book {
-id?: number;
+  id?: number;
   title: string;
   author: string;
   publisher: string;
@@ -12,38 +12,29 @@ id?: number;
   purchaseLink: string;
 }
 
-let bookInfo: Book[] = [];
-let book: Book | null = null;
+/* ------------------------- global variables  ------------------------- */
+
+let bookInfo: Book[] = []; //result of the Api's request
+let book: Book | null = null; //single element of bookInfo
 let searchResults: Book[];
-const searchElement: HTMLInputElement | null =
-document.querySelector("#search");
-const submitBtn: HTMLButtonElement = document.querySelector("#submitBtn");
-const searchForm: HTMLElement = document.querySelector("#searchForm");
-const resultsDiv: HTMLDivElement = document.createElement("div");
-const booksArray: HTMLElement[] = createClickableBooksList();
 let resultsArray: HTMLElement[] = [];
-const firstPage: HTMLElement = document.querySelector("#booksContainer");
-const secondPage: HTMLElement = document.querySelector("#bookInfoContainer");
-const bookNameInfoPage: HTMLElement | null =
-  document.querySelector(".infoPageBookName");
-const authorNameInfoPage: HTMLElement | null = document.querySelector(
-  ".infoPageAuthorName"
-);
-const bookNameInfoPage2: HTMLElement | null =
-  document.querySelector(".infoPageBookName2");
-const authorNameInfoPage2: HTMLElement | null = document.querySelector(
-  ".infoPageAuthorName2"
-);
-const goBackBtn: HTMLButtonElement | null =
-  document.querySelector(".goBackBtn");
-const infoPageCover: HTMLImageElement | null =
-  document.querySelector(".infoPageCover");
-const bookDescription: HTMLElement | null =
-  document.querySelector(".bookDescription");
-const bookContainer: NodeListOf<HTMLElement> =
-  document.querySelectorAll(".book");
-const infoBookContainer: HTMLDivElement | null =
-  document.querySelector(".infoBook");
+
+const searchElement: HTMLInputElement | null = document.querySelector("#search")!;
+const submitBtn: HTMLButtonElement = document.querySelector("#submitBtn")!;
+const searchForm: HTMLElement = document.querySelector("#searchForm")!;
+const resultsDiv: HTMLDivElement = document.createElement("div")!;
+const booksArray: HTMLElement[] = createClickableBooksList();
+const firstPage: HTMLElement = document.querySelector("#booksContainer")!;
+const secondPage: HTMLElement = document.querySelector("#bookInfoContainer")!;
+const bookNameInfoPage: HTMLElement = document.querySelector(".infoPageBookName")!;
+const authorNameInfoPage: HTMLElement = document.querySelector(".infoPageAuthorName")!;
+const bookNameInfoPage2: HTMLElement = document.querySelector(".infoPageBookName2")!;
+const authorNameInfoPage2: HTMLElement = document.querySelector(".infoPageAuthorName2")!;
+const goBackBtn: HTMLButtonElement = document.querySelector(".goBackBtn")!;
+const infoPageCover: HTMLImageElement = document.querySelector(".infoPageCover")!;
+const bookDescription: HTMLElement = document.querySelector(".bookDescription")!;
+const bookContainer: NodeListOf<HTMLElement> = document.querySelectorAll(".book")!;
+const infoBookContainer: HTMLDivElement | null = document.querySelector(".infoBook");
 const purchaseLinksList: string[] = [
   "https://www.amazon.co.uk/s?k=goodnight+moon+books+for+babies&adgrpid=1172080299680144&hvadid=73255218919932&hvbmt=bb&hvdev=c&hvlocphy=153541&hvnetw=o&hvqmt=b&hvtargid=kwd-73255163107393%3Aloc-174&hydadcr=24834_1854582&tag=mh0a9-21&ref=pd_sl_68iejd3qhb_b",
   "https://www.wob.com/en-gb/books/eric-carle/very-hungry-caterpillar/9780140569322?msclkid=6a9c32314b5115cfd45657be71ab63c0&utm_source=bing&utm_medium=cpc&utm_campaign=Wob%20-%20GBR%20-%20Bing%20-%20Standard%20Shopping%20-%20GOR%20-%20EN%20-%20XX%20-%20Used%20Books%20-%20SalesRank%3A%201001%20-%205000&utm_term=4574861742249794&utm_content=Ad%20group",
@@ -55,6 +46,7 @@ const purchaseLinksList: string[] = [
   "https://www.wob.com/en-gb/books/e-b-white/charlotte-s-web/9780141329680?msclkid=e4f1c9ccef8818187e3cac43d3ef7160&utm_source=bing&utm_medium=cpc&utm_campaign=Wob%20-%20GBR%20-%20Bing%20-%20Standard%20Shopping%20-%20GOR%20-%20EN%20-%20XX%20-%20Used%20Books%20-%20SalesRank%3A%201000001%20-%202000000&utm_term=4575411497703322&utm_content=Ad%20group",
 ];
 
+// function: gets info from Api
 async function getInfoBook(): Promise<void> {
   try {
     const response: Response = await fetch(
@@ -77,90 +69,82 @@ async function getInfoBook(): Promise<void> {
   }
 }
 
+//function: creates an array from a node-list with elements with class 'book'
 function createClickableBooksList(): HTMLElement[] {
-  const clickableBooks: NodeListOf<HTMLElement> =
-    document.querySelectorAll(".book");
+  const clickableBooks: NodeListOf<HTMLElement> = document.querySelectorAll(".book");
 
   return Array.from(clickableBooks);
 }
 
+//function: pairs the book by id (Api element) and data-id (HTML element)
+//          fills information inside the cover-side using Api's info
 function updateBookCover(): void {
   for (const bookElement of booksArray) {
     const dataId: string | null = bookElement.getAttribute("data-id");
     const bookId: number = dataId ? +dataId : 0;
+    //if string dataId is not null, wil be converted in a number
 
     book = bookInfo.find((book) => book.id === bookId);
-
+    // checks every single book in the array bookInfo and compares the book.id from the Api and
+    // the data-id of the HTMLElement after has been converted in a number(bookId)
+    // if the IDs match the informations willl be filled
     if (book) {
-      const bookNameElement: HTMLElement | null =
-        bookElement.querySelector(".bookName");
-      const authorNameElement: HTMLElement | null =
-        bookElement.querySelector(".authorName");
+      const bookNameElement: HTMLElement | null = bookElement.querySelector(".bookName");
+      const authorNameElement: HTMLElement | null = bookElement.querySelector(".authorName");
 
       if (bookNameElement && authorNameElement) {
         bookNameElement.textContent = book.title;
         authorNameElement.textContent = book.author;
-
-        // Imposta il colore di sfondo
         bookElement.style.backgroundColor = book.color || "";
       }
     }
   }
 }
 
+//function: fill the info-container with Api's info
+//          called in the attachClickEvent
 function displayBookInfoContainer(): void {
-  goBackBtn.style.display="block";
+  goBackBtn.style.display = "block";
   firstPage.style.display = "none";
   secondPage.style.display = "flex";
   resultsDiv.innerHTML = "";
   searchElement.value = "";
 
-  if (
-    bookNameInfoPage &&
-    authorNameInfoPage &&
-    infoPageCover &&
-    bookNameInfoPage2 &&
-    authorNameInfoPage2 &&
-    bookDescription &&
-    infoBookContainer
-  ) {
-    bookNameInfoPage.textContent = book.title || "";
-    authorNameInfoPage.textContent = book.author || "";
-    bookNameInfoPage2.textContent = book.title || "";
-    authorNameInfoPage2.textContent = book.author || "";
-    bookDescription.textContent = book.plot || "";
-    infoPageCover.src = book.coverUrl || "";
-    infoBookContainer.style.backgroundColor = book.color || "";
-    
-  }
+  bookNameInfoPage.textContent = book.title || "";
+  authorNameInfoPage.textContent = book.author || "";
+  bookNameInfoPage2.textContent = book.title || "";
+  authorNameInfoPage2.textContent = book.author || "";
+  bookDescription.textContent = book.plot || "";
+  infoPageCover.src = book.coverUrl || "";
+  infoBookContainer.style.backgroundColor = book.color || "";
+
   updateDetailsBox();
-  
 }
 
+//create the main event listener
 function attachClickEvent(): void {
   booksArray.forEach((bookElement) => {
     bookElement.addEventListener("click", () => {
       const dataId: string | null = bookElement.getAttribute("data-id");
       const bookId: number = dataId ? +dataId : 0;
+      // checks every single book in the array bookInfo and compares the book.id from the Api and
+      // the data-id of the HTMLElement after has been converted in a number(bookId)
+      // if the IDs match the informations willl be filled
 
-      // Trova il libro corrispondente nell'array bookInfo
       const clickedBook = bookInfo.find((book) => book.id === bookId);
 
       if (clickedBook) {
-        // Aggiorna il libro corrente con il libro cliccato
+        // Updates the current book with the clicked one
         book = clickedBook;
 
-        // Ottieni l'URL della copertina dalla copertina cliccata
-        const coverUrl: string | null = bookElement
-          .querySelector(".cover")
-          ?.getAttribute("src");
+        // Gets the cover's url of the single book
+        const coverUrl: string | null = bookElement.querySelector(".cover")?.getAttribute("src");
 
-        // Inietta l'URL della copertina in clickedBook
+        // injects the cover in clickedBook
         clickedBook.coverUrl = coverUrl || "";
 
-        // Mostra la seconda pagina con le informazioni aggiornate
+        // shows infos
         displayBookInfoContainer();
-        
       }
     });
   });
@@ -170,10 +154,8 @@ function updateDetailsBox(): void {
   const detailsBox: HTMLElement = document.querySelector(".detailsBox");
 
   if (detailsBox) {
-    // Pulisci i contenuti esistenti nella lista
     detailsBox.innerHTML = "";
-
-    // Aggiungi i dettagli dinamicamente
+    // adds details dynamically and appends them to the HTML detailsBox
     const audienceItem: HTMLElement = document.createElement("div");
     audienceItem.innerHTML = `
       <li><strong>Audience: </strong>${book?.audience || ""}</li>
@@ -196,6 +178,7 @@ function attachBackButton(): void {
   });
 }
 
+//generic function that gets the index from the links list that matches with the right books.id
 function getPurchaseLinkIndex(id: number): number {
   return id - 1;
 }
@@ -207,96 +190,85 @@ function attachBuyButton(): void {
     buyBtn.addEventListener("click", () => {
       console.log("button clicked");
 
-      // Verifica se il libro corrente ha un ID valido
-      if (
-        book &&
-        book.id !== undefined &&
-        book.id >= 1 &&
-        book.id <= purchaseLinksList.length
-      ) {
+      // checks if the id is valid
+      // use book.id as argument in the previous function to get the right index
+      if (book && book.id !== undefined && book.id >= 1 && book.id <= purchaseLinksList.length) {
         const purchaseLinkIndex = getPurchaseLinkIndex(book.id);
 
-        // Verifica se l'indice è valido
-        if (
-          purchaseLinkIndex >= 0 &&
-          purchaseLinkIndex < purchaseLinksList.length
-        ) {
+        // checks if the gotten index is usable
+        if (purchaseLinkIndex >= 0 && purchaseLinkIndex < purchaseLinksList.length) {
           const purchaseLink = purchaseLinksList[purchaseLinkIndex];
 
           if (purchaseLink) {
-            // Reindirizza l'utente al link di acquisto
+            // sends the user to the web address in a new page
             window.open(purchaseLink, "_blank");
           } else {
-            console.error("Link di acquisto non disponibile per questo libro");
+            console.error("Not avaible");
           }
         } else {
-          console.error("Indice del link di acquisto non valido");
+          console.error("Not avaible");
         }
       } else {
-        console.error("ID del libro non valido");
+        console.error("ID not valid");
       }
     });
   }
 }
 
+//function: compares the input's field to with the books' titles and authors
 function searchBook(): void {
- 
-
   if (searchElement) {
     const searchTerm = searchElement.value.toLowerCase();
 
     searchResults = bookInfo.filter(
-      (book) =>
-        book.title.toLowerCase().includes(searchTerm) ||
-        book.author.toLowerCase().includes(searchTerm) 
+      (book) => book.title.toLowerCase().includes(searchTerm) || book.author.toLowerCase().includes(searchTerm)
     );
-    if (searchElement.value ==  "" ) {
+    //if the input is empty, resultsDiv's empty too
+    if (searchElement.value == "") {
       resultsDiv.innerHTML = "";
     }
 
     if (searchResults.length > 0) {
+      //eventual results will be displayed
       displaySearchResults(searchResults);
-      
-      
-} else {
+    } else {
       displayNoResultsMessage();
     }
     attachClickEventToResults();
   }
 }
 
-
+//generic function to display results, then used with searchResults as argument
 function displaySearchResults(results: Book[]): void {
-  // Rimuovi i risultati precedenti
   resultsDiv.innerHTML = "";
 
-  // Creare un elemento div per ogni risultato e visualizzarlo
+  // loops in the resultsDiv to get the simple result and sets a data-id on it,
+  // to add a css class and the matching book's color
   results.forEach((result) => {
     const resultDiv = document.createElement("div");
     resultDiv.classList.add("resultDiv");
-    resultDiv.setAttribute("data-id", result.id.toString());  // Aggiungi l'ID del libro come data-id
+    resultDiv.setAttribute("data-id", result.id.toString()); // Aggiungi l'ID del libro come data-id
     resultDiv.style.backgroundColor = `${result.color}`;
     resultDiv.innerHTML = `
       <h3>${result.title}</h3>
       <p><strong>Author:</strong> ${result.author}</p>
     `;
+
+    //filled element gets append to the containers
     resultsDiv.appendChild(resultDiv);
   });
-
-  // Aggiungi i risultati al form di ricerca
   searchForm.appendChild(resultsDiv);
 
-  // Aggiorna l'array di risultati cliccabili
+  // updates the array with clickable results
   updateResultsArray();
 
-  // Chiamare la funzione una volta dopo la creazione di tutti gli elementi risultato
+  // calls the function after the results are generated
   attachClickEventToResults();
 }
 
-
+//creates an array from a node-list with clickable elements (same as createClickableBooksList() and clickableBooks)
 function createClickableResultsList(): HTMLElement[] {
-  const clickableResults: NodeListOf<HTMLElement> =
-    document.querySelectorAll(".resultDiv");
+  const clickableResults: NodeListOf<HTMLElement> = document.querySelectorAll(".resultDiv");
 
   return Array.from(clickableResults);
 }
@@ -304,35 +276,31 @@ function createClickableResultsList(): HTMLElement[] {
 function attachClickEventToResults(): void {
   resultsArray.forEach((resultElement) => {
     resultElement.addEventListener("click", () => {
-      // Ottieni direttamente l'ID del libro dall'attributo data-id dell'elemento risultato
+      // makes the book id number to become the result element's data-id
       const bookId: number = +resultElement.getAttribute("data-id") || 0;
-console.log(bookId);
+      console.log(bookId);
 
-      // Trova l'elemento del libro corrispondente nell'array booksArray
+      // searches in booksArray (clickableList()) and extracts the id
+      // if the extraxted and converted array's element id is the same of book.id the callback return true
       const bookElement = booksArray.find((element) => {
         const dataId: string | null = element.getAttribute("data-id");
         const elementBookId: number = dataId ? +dataId : 0;
         return elementBookId === bookId;
       });
-;
-
       if (bookElement) {
-        // Ottieni l'URL della copertina dall'elemento del libro
-        const coverUrl: string | null = bookElement
-          .querySelector(".cover")
-          ?.getAttribute("src");
+        const coverUrl: string | null = bookElement.querySelector(".cover")?.getAttribute("src");
 
-        // Trova il libro corrispondente nell'array bookInfo
+        // find the matching book in the array bookInfo
         const clickedBook = bookInfo.find((book) => book.id === bookId);
 
         if (clickedBook) {
           // Aggiorna il libro corrente con il libro cliccato
           book = clickedBook;
 
-          // Inietta l'URL della copertina in clickedBook
+          // inject cover in clickedBook
           clickedBook.coverUrl = coverUrl || "";
 
-          // Mostra la seconda pagina con le informazioni aggiornate
+          // show the page with the infos of the book
           displayBookInfoContainer();
         }
       }
@@ -340,22 +308,17 @@ console.log(bookId);
   });
 }
 
-
-
-
 function updateResultsArray() {
   resultsArray = createClickableResultsList();
 }
 
-
 function displayNoResultsMessage(): void {
-  // Rimuovi i risultati precedenti
   resultsDiv.innerHTML = "";
 
-  // Visualizza un messaggio "no Results"
   resultsDiv.textContent = "No Results";
 }
 
+//create the event for both click and enter submit
 function createSubmitEvent(): void {
   if (searchElement) {
     searchElement.addEventListener("input", () => {
@@ -364,9 +327,8 @@ function createSubmitEvent(): void {
         resultsDiv.innerHTML = "";
       }
     });
-   
   }
- 
+
   if (submitBtn && searchForm) {
     submitBtn.addEventListener("click", () => {
       console.log("submitted");
@@ -374,15 +336,12 @@ function createSubmitEvent(): void {
     });
 
     searchForm.addEventListener("submit", (event) => {
-      event.preventDefault(); // Impedisce l'invio del modulo normale
+      event.preventDefault(); //avoid normal submit
       console.log("submitted");
       searchBook();
     });
   }
 }
-
-
-
 
 createSubmitEvent();
 getInfoBook();

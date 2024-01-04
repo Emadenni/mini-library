@@ -7,15 +7,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-let bookInfo = [];
-let book = null;
+/* ------------------------- global variables  ------------------------- */
+let bookInfo = []; //result of the Api's request
+let book = null; //single element of bookInfo
 let searchResults;
+let resultsArray = [];
 const searchElement = document.querySelector("#search");
 const submitBtn = document.querySelector("#submitBtn");
 const searchForm = document.querySelector("#searchForm");
 const resultsDiv = document.createElement("div");
 const booksArray = createClickableBooksList();
-let resultsArray = [];
 const firstPage = document.querySelector("#booksContainer");
 const secondPage = document.querySelector("#bookInfoContainer");
 const bookNameInfoPage = document.querySelector(".infoPageBookName");
@@ -37,6 +38,7 @@ const purchaseLinksList = [
     "https://www.amazon.co.uk/s?k=the+tale+of+peter+rabbit+hieroglyph+edition&adgrpid=1184175039985531&hvadid=74011162763008&hvbmt=bb&hvdev=c&hvlocphy=153541&hvnetw=o&hvqmt=b&hvtargid=kwd-74011141358501%3Aloc-174&hydadcr=24492_2219297&tag=mh0a9-21&ref=pd_sl_7dfanvv9qu_b",
     "https://www.wob.com/en-gb/books/e-b-white/charlotte-s-web/9780141329680?msclkid=e4f1c9ccef8818187e3cac43d3ef7160&utm_source=bing&utm_medium=cpc&utm_campaign=Wob%20-%20GBR%20-%20Bing%20-%20Standard%20Shopping%20-%20GOR%20-%20EN%20-%20XX%20-%20Used%20Books%20-%20SalesRank%3A%201000001%20-%202000000&utm_term=4575411497703322&utm_content=Ad%20group",
 ];
+// function: gets info from Api
 function getInfoBook() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -55,67 +57,69 @@ function getInfoBook() {
         }
     });
 }
+//function: creates an array from a node-list with elements with class 'book'
 function createClickableBooksList() {
     const clickableBooks = document.querySelectorAll(".book");
     return Array.from(clickableBooks);
 }
+//function: pairs the book by id (Api element) and data-id (HTML element)
+//          fills information inside the cover-side using Api's info
 function updateBookCover() {
     for (const bookElement of booksArray) {
         const dataId = bookElement.getAttribute("data-id");
         const bookId = dataId ? +dataId : 0;
+        //if string dataId is not null, wil be converted in a number
         book = bookInfo.find((book) => book.id === bookId);
+        // checks every single book in the array bookInfo and compares the book.id from the Api and
+        // the data-id of the HTMLElement after has been converted in a number(bookId)
+        // if the IDs match the informations willl be filled
         if (book) {
             const bookNameElement = bookElement.querySelector(".bookName");
             const authorNameElement = bookElement.querySelector(".authorName");
             if (bookNameElement && authorNameElement) {
                 bookNameElement.textContent = book.title;
                 authorNameElement.textContent = book.author;
-                // Imposta il colore di sfondo
                 bookElement.style.backgroundColor = book.color || "";
             }
         }
     }
 }
+//function: fill the info-container with Api's info
+//          called in the attachClickEvent
 function displayBookInfoContainer() {
     goBackBtn.style.display = "block";
     firstPage.style.display = "none";
     secondPage.style.display = "flex";
     resultsDiv.innerHTML = "";
     searchElement.value = "";
-    if (bookNameInfoPage &&
-        authorNameInfoPage &&
-        infoPageCover &&
-        bookNameInfoPage2 &&
-        authorNameInfoPage2 &&
-        bookDescription &&
-        infoBookContainer) {
-        bookNameInfoPage.textContent = book.title || "";
-        authorNameInfoPage.textContent = book.author || "";
-        bookNameInfoPage2.textContent = book.title || "";
-        authorNameInfoPage2.textContent = book.author || "";
-        bookDescription.textContent = book.plot || "";
-        infoPageCover.src = book.coverUrl || "";
-        infoBookContainer.style.backgroundColor = book.color || "";
-    }
+    bookNameInfoPage.textContent = book.title || "";
+    authorNameInfoPage.textContent = book.author || "";
+    bookNameInfoPage2.textContent = book.title || "";
+    authorNameInfoPage2.textContent = book.author || "";
+    bookDescription.textContent = book.plot || "";
+    infoPageCover.src = book.coverUrl || "";
+    infoBookContainer.style.backgroundColor = book.color || "";
     updateDetailsBox();
 }
+//create the main event listener
 function attachClickEvent() {
     booksArray.forEach((bookElement) => {
         bookElement.addEventListener("click", () => {
             var _a;
             const dataId = bookElement.getAttribute("data-id");
             const bookId = dataId ? +dataId : 0;
-            // Trova il libro corrispondente nell'array bookInfo
+            // checks every single book in the array bookInfo and compares the book.id from the Api and
+            // the data-id of the HTMLElement after has been converted in a number(bookId)
+            // if the IDs match the informations willl be filled
             const clickedBook = bookInfo.find((book) => book.id === bookId);
             if (clickedBook) {
-                // Aggiorna il libro corrente con il libro cliccato
+                // Updates the current book with the clicked one
                 book = clickedBook;
-                // Ottieni l'URL della copertina dalla copertina cliccata
-                const coverUrl = (_a = bookElement
-                    .querySelector(".cover")) === null || _a === void 0 ? void 0 : _a.getAttribute("src");
-                // Inietta l'URL della copertina in clickedBook
+                // Gets the cover's url of the single book
+                const coverUrl = (_a = bookElement.querySelector(".cover")) === null || _a === void 0 ? void 0 : _a.getAttribute("src");
+                // injects the cover in clickedBook
                 clickedBook.coverUrl = coverUrl || "";
-                // Mostra la seconda pagina con le informazioni aggiornate
+                // shows infos
                 displayBookInfoContainer();
             }
         });
@@ -124,9 +128,8 @@ function attachClickEvent() {
 function updateDetailsBox() {
     const detailsBox = document.querySelector(".detailsBox");
     if (detailsBox) {
-        // Pulisci i contenuti esistenti nella lista
         detailsBox.innerHTML = "";
-        // Aggiungi i dettagli dinamicamente
+        // adds details dynamically and appends them to the HTML detailsBox
         const audienceItem = document.createElement("div");
         audienceItem.innerHTML = `
       <li><strong>Audience: </strong>${(book === null || book === void 0 ? void 0 : book.audience) || ""}</li>
@@ -146,6 +149,7 @@ function attachBackButton() {
         window.location.reload();
     });
 }
+//generic function that gets the index from the links list that matches with the right books.id
 function getPurchaseLinkIndex(id) {
     return id - 1;
 }
@@ -154,43 +158,42 @@ function attachBuyButton() {
     if (buyBtn) {
         buyBtn.addEventListener("click", () => {
             console.log("button clicked");
-            // Verifica se il libro corrente ha un ID valido
-            if (book &&
-                book.id !== undefined &&
-                book.id >= 1 &&
-                book.id <= purchaseLinksList.length) {
+            // checks if the id is valid
+            // use book.id as argument in the previous function to get the right index
+            if (book && book.id !== undefined && book.id >= 1 && book.id <= purchaseLinksList.length) {
                 const purchaseLinkIndex = getPurchaseLinkIndex(book.id);
-                // Verifica se l'indice è valido
-                if (purchaseLinkIndex >= 0 &&
-                    purchaseLinkIndex < purchaseLinksList.length) {
+                // checks if the gotten index is usable
+                if (purchaseLinkIndex >= 0 && purchaseLinkIndex < purchaseLinksList.length) {
                     const purchaseLink = purchaseLinksList[purchaseLinkIndex];
                     if (purchaseLink) {
-                        // Reindirizza l'utente al link di acquisto
+                        // sends the user to the web address in a new page
                         window.open(purchaseLink, "_blank");
                     }
                     else {
-                        console.error("Link di acquisto non disponibile per questo libro");
+                        console.error("Not avaible");
                     }
                 }
                 else {
-                    console.error("Indice del link di acquisto non valido");
+                    console.error("Not avaible");
                 }
             }
             else {
-                console.error("ID del libro non valido");
+                console.error("ID not valid");
             }
         });
     }
 }
+//function: compares the input's field to with the books' titles and authors
 function searchBook() {
     if (searchElement) {
         const searchTerm = searchElement.value.toLowerCase();
-        searchResults = bookInfo.filter((book) => book.title.toLowerCase().includes(searchTerm) ||
-            book.author.toLowerCase().includes(searchTerm));
+        searchResults = bookInfo.filter((book) => book.title.toLowerCase().includes(searchTerm) || book.author.toLowerCase().includes(searchTerm));
+        //if the input is empty, resultsDiv's empty too
         if (searchElement.value == "") {
             resultsDiv.innerHTML = "";
         }
         if (searchResults.length > 0) {
+            //eventual results will be displayed
             displaySearchResults(searchResults);
         }
         else {
@@ -199,10 +202,11 @@ function searchBook() {
         attachClickEventToResults();
     }
 }
+//generic function to display results, then used with searchResults as argument
 function displaySearchResults(results) {
-    // Rimuovi i risultati precedenti
     resultsDiv.innerHTML = "";
-    // Creare un elemento div per ogni risultato e visualizzarlo
+    // loops in the resultsDiv to get the simple result and sets a data-id on it,
+    // to add a css class and the matching book's color
     results.forEach((result) => {
         const resultDiv = document.createElement("div");
         resultDiv.classList.add("resultDiv");
@@ -212,15 +216,16 @@ function displaySearchResults(results) {
       <h3>${result.title}</h3>
       <p><strong>Author:</strong> ${result.author}</p>
     `;
+        //filled element gets append to the containers
         resultsDiv.appendChild(resultDiv);
     });
-    // Aggiungi i risultati al form di ricerca
     searchForm.appendChild(resultsDiv);
-    // Aggiorna l'array di risultati cliccabili
+    // updates the array with clickable results
     updateResultsArray();
-    // Chiamare la funzione una volta dopo la creazione di tutti gli elementi risultato
+    // calls the function after the results are generated
     attachClickEventToResults();
 }
+//creates an array from a node-list with clickable elements (same as createClickableBooksList() and clickableBooks)
 function createClickableResultsList() {
     const clickableResults = document.querySelectorAll(".resultDiv");
     return Array.from(clickableResults);
@@ -229,28 +234,26 @@ function attachClickEventToResults() {
     resultsArray.forEach((resultElement) => {
         resultElement.addEventListener("click", () => {
             var _a;
-            // Ottieni direttamente l'ID del libro dall'attributo data-id dell'elemento risultato
+            // makes the book id number to become the result element's data-id
             const bookId = +resultElement.getAttribute("data-id") || 0;
             console.log(bookId);
-            // Trova l'elemento del libro corrispondente nell'array booksArray
+            // searches in booksArray (clickableList()) and extracts the id
+            // if the extraxted and converted array's element id is the same of book.id the callback return true
             const bookElement = booksArray.find((element) => {
                 const dataId = element.getAttribute("data-id");
                 const elementBookId = dataId ? +dataId : 0;
                 return elementBookId === bookId;
             });
-            ;
             if (bookElement) {
-                // Ottieni l'URL della copertina dall'elemento del libro
-                const coverUrl = (_a = bookElement
-                    .querySelector(".cover")) === null || _a === void 0 ? void 0 : _a.getAttribute("src");
-                // Trova il libro corrispondente nell'array bookInfo
+                const coverUrl = (_a = bookElement.querySelector(".cover")) === null || _a === void 0 ? void 0 : _a.getAttribute("src");
+                // find the matching book in the array bookInfo
                 const clickedBook = bookInfo.find((book) => book.id === bookId);
                 if (clickedBook) {
                     // Aggiorna il libro corrente con il libro cliccato
                     book = clickedBook;
-                    // Inietta l'URL della copertina in clickedBook
+                    // inject cover in clickedBook
                     clickedBook.coverUrl = coverUrl || "";
-                    // Mostra la seconda pagina con le informazioni aggiornate
+                    // show the page with the infos of the book
                     displayBookInfoContainer();
                 }
             }
@@ -261,11 +264,10 @@ function updateResultsArray() {
     resultsArray = createClickableResultsList();
 }
 function displayNoResultsMessage() {
-    // Rimuovi i risultati precedenti
     resultsDiv.innerHTML = "";
-    // Visualizza un messaggio "no Results"
     resultsDiv.textContent = "No Results";
 }
+//create the event for both click and enter submit
 function createSubmitEvent() {
     if (searchElement) {
         searchElement.addEventListener("input", () => {
@@ -281,7 +283,7 @@ function createSubmitEvent() {
             searchBook();
         });
         searchForm.addEventListener("submit", (event) => {
-            event.preventDefault(); // Impedisce l'invio del modulo normale
+            event.preventDefault(); //avoid normal submit
             console.log("submitted");
             searchBook();
         });
